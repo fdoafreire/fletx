@@ -92,3 +92,6 @@ de 2 horas. Basicamente  se debe hacer lo siguiente:
 * crear un worker que realizar una consulta a la base de datos para encontrar manifiestos inactivos.
 * Configurar el scheduler con una regla CRON o un intervalo para que Sidekiq  encole y ejecute el job.
 * El worker procesa los resultados, la acción deseada.
+
+## Video explicativo
+[Video explicación](https://www.loom.com/share/a7ae807acc3145ae9cc1ec2714bf9c07)
