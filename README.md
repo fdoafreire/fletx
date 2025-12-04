@@ -39,7 +39,7 @@ docker compose exec app bundle exec rails db:migrate
 
 # 5. Inicialización de la base de datos (Seeding)
 docker compose exec app bundle exec rails db:seed
-
+```
 ## Ejercicio 3
 
 
