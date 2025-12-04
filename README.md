@@ -86,9 +86,9 @@ WHERE
 ```
 
 ## Ejercicio 4
-Los Background Jobs tares en segundo plano que genralmente usamos para ejecutar tareas largas, lentas o periódicas fuera del flujo principal.
+Los Background Jobs son tares en segundo plano que genralmente usamos para ejecutar tareas largas, lentas o periódicas fuera del flujo principal.
 Para  implementar un job en Sidekiq con scheduler que detecte manifiestos sin cambios por más
-de 2 horas. Basicamente 
+de 2 horas. Basicamente  se debe hacer lo siguiente:
 *crear un worker que realizar una consulta a la base de datos para encontrar manifiestos inactivos.
 *Configurar el scheduler con una regla CRON o un intervalo para que Sidekiq  encole y ejecute el job.
 *El worker procesa los resultados, la acción deseada.
