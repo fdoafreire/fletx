@@ -42,6 +42,24 @@ docker compose exec app bundle exec rails db:seed
 ```
 ## Ejercicio 3
 
+Para obtener  los manifestos en estado in_route junto con su última parada
+completada el enfoque que tomaria seria una subconsulta agregada con MAX() combinada con un JOIN.
+ya que esta me permite evitar las subconsultas correlaciondas ( para le manifiesto # 1 cual es la ultima
+parada x manifiesto) mientras que un max group by le dice a la base de datos, 
+dame la hora de finalización más reciente para TODOS los manifiestos
+
+### Indices sugeridos
+stops (Compuesto):
+
+Propuesta: CREATE INDEX idx_stops_comp_manifesto ON stops (status, manifesto_id, completed_at DESC);
+
+Justificación: Este índice acelera la subconsulta LatestCompleted. Permite a la base de datos filtrar rápidamente por status = 2 y luego agrupar (manifesto_id) y encontrar el máximo (completed_at) de manera muy eficiente, ya que los datos están preordenados en el índice.
+
+Índice en manifestos:
+
+Propuesta: CREATE INDEX idx_manifestos_status ON manifestos (status, id);
+
+Justificación: Optimiza el filtro final m.status = 1 y la clave de unión.
 
 ```sql
 SELECT
