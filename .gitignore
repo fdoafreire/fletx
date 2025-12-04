@@ -1,0 +1,71 @@
+# ----------------------------------------------------------------------
+# Configuraciones Generales y de Sistema
+# ----------------------------------------------------------------------
+
+# Archivos de OS/Editor (macOS, Windows, Linux)
+.DS_Store
+.vscode/
+Thumbs.db
+
+# ----------------------------------------------------------------------
+# Dependencias e Instalación
+# ----------------------------------------------------------------------
+
+# Gemas instaladas localmente por Bundle (excluidas del control de versiones)
+/vendor/bundle
+
+# Archivos de credenciales maestros/locales (NO deben ser públicos)
+/config/master.key
+/config/credentials/
+/config/secrets.yml
+
+# ----------------------------------------------------------------------
+# Archivos Generados por Rails y la Aplicación
+# ----------------------------------------------------------------------
+
+# Directorios de Archivos Temporales
+/tmp
+/log
+/pids
+
+# Bases de datos SQLite3 y otras bases de datos de desarrollo
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Archivos de caché
+/public/assets
+/public/packs
+/public/vite
+/node_modules
+/public/system
+/storage/* # ActiveStorage (archivos subidos)
+!/storage/.keep # Mantener el directorio vacío
+
+# Pruebas (si Rails genera archivos temporales aquí)
+/test/tmp
+
+# Archivos de configuración de Pry/IRB
+.byebug_history
+.irb_history
+.pry_history
+
+# ----------------------------------------------------------------------
+# Docker y Entorno
+# ----------------------------------------------------------------------
+
+# Ignorar los archivos .env que contienen secretos
+.env
+.env.*
+
+# Ignorar cualquier archivo binario generado por Docker (si no está en .dockerignore)
+# Aunque docker-compose.yml DEBE ser rastreado, el archivo de exclusión bin/ puede ser ignorado.
+/bin/rails
+/bin/rake
+/bin/setup
+
+# ----------------------------------------------------------------------
+# Despliegue (Kamal)
+# ----------------------------------------------------------------------
+
+# Ignorar el archivo de configuración de secretos de Kamal (debe ser seguro)
+# Las carpetas .kamal/ y el Dockerfile sí se rastrean.

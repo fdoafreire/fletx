@@ -1,0 +1,29 @@
+services:
+  fletx-db:
+    image: postgres:15.5-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: logistics_manifestos_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  fletx-web:
+    build: .
+    command: /bin/bash -c "rm -f /app/tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fletx-db
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://postgres:password@fletx-db:5432/logistics_manifestos_development
+      DEVISE_JWT_SECRET_KEY: "fletx-key"
+
+volumes:
+  postgres_data:
