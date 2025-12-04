@@ -1,0 +1,287 @@
+{
+	"info": {
+		"_postman_id": "5da5fb6b-525f-4ebe-a833-38d5fe0ff1e3",
+		"name": "FletX",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "506449"
+	},
+	"item": [
+		{
+			"name": "AUTH: Autenticación JWT",
+			"item": [
+				{
+					"name": "1. LOGIN (POST /api/v1/users/sign_in)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Asegúrate de que el estado sea 200/201 (OK/Created)",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Extraer el token del header 'Authorization' o similar",
+									"const authHeader = pm.response.headers.get('Authorization');",
+									"if (authHeader) {",
+									"    // Asume el formato 'Bearer [TOKEN]' o 'jwt_auth [TOKEN]'",
+									"    const token = authHeader.split(' ').pop();",
+									"    pm.environment.set(\"JWT_TOKEN\", token);",
+									"    console.log(\"JWT Token guardado: \" + token);",
+									"} else {",
+									"    pm.environment.unset(\"JWT_TOKEN\");",
+									"    console.log(\"No se encontró el header Authorization.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"admin@fletx.com\", \n        \"password\": \"password123\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/sign_in",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"sign_in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. LOGOUT (DELETE /api/v1/users/sign_out)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/users/sign_out",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"sign_out"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MANIFESTOS: Operaciones de Ruta",
+			"item": [
+				{
+					"name": "1. CREAR MANIFESTO (POST /api/v1/manifestos)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Extrae el ID del manifiesto creado para usarlo en otras peticiones",
+									"const responseData = pm.response.json().data;",
+									"if (responseData && responseData.id) {",
+									"    pm.environment.set(\"MANIFESTO_ID\", responseData.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"manifesto\": {\n        \"date\": \"2025-12-04\",\n        \"driver_id\": 1, \n        \"vehicle_id\": 1,\n        \"status\": \"pending\",\n        \"stops\": [\n            {\"address\": \"Almacén Origen (Pickup)\", \"order\": 1, \"stop_type\": 0},\n            {\"address\": \"Cliente A (Delivery)\", \"order\": 2, \"stop_type\": 1},\n            {\"address\": \"Cliente B (Delivery)\", \"order\": 3, \"stop_type\": 1}\n        ]\n    }\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/manifestos",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"manifestos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. INICIAR MANIFESTO (PATCH /api/v1/manifestos/:id/start)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Extrae el ID del primer Stop (necesario para la siguiente acción)",
+									"const response = pm.response.json();",
+									"const stops = response.data.relationships.stops.data;",
+									"if (stops.length > 0) {",
+									"    pm.environment.set(\"STOP_ID_1\", stops[0].id);",
+									"    console.log(\"Primer Stop ID guardado: \" + stops[0].id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/manifestos/{{MANIFESTO_ID}}/start",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"manifestos",
+								"{{MANIFESTO_ID}}",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. OBTENER MANIFESTO (GET /api/v1/manifestos/:id)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/manifestos/{{MANIFESTO_ID}}?include=stops",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"manifestos",
+								"{{MANIFESTO_ID}}"
+							],
+							"query": [
+								{
+									"key": "include",
+									"value": "stops"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "STOPS: Operaciones de Parada",
+			"item": [
+				{
+					"name": "1. COMPLETAR STOP 1 (PATCH /api/v1/stops/:id/complete)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{JWT_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/stops/{{STOP_ID_1}}/complete",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"stops",
+								"{{STOP_ID_1}}",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
