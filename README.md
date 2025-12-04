@@ -49,16 +49,10 @@ parada x manifiesto) mientras que un max group by le dice a la base de datos,
 dame la hora de finalización más reciente para TODOS los manifiestos
 
 ### Indices sugeridos
-stops (Compuesto):
-
-Propuesta: CREATE INDEX idx_stops_comp_manifesto ON stops (status, manifesto_id, completed_at DESC);
-
+stops: CREATE INDEX idx_stops_comp_manifesto ON stops (status, manifesto_id, completed_at DESC);
 Justificación: Este índice acelera la subconsulta LatestCompleted. Permite a la base de datos filtrar rápidamente por status = 2 y luego agrupar (manifesto_id) y encontrar el máximo (completed_at) de manera muy eficiente, ya que los datos están preordenados en el índice.
 
-Índice en manifestos:
-
-Propuesta: CREATE INDEX idx_manifestos_status ON manifestos (status, id);
-
+manifestos: CREATE INDEX idx_manifestos_status ON manifestos (status, id);
 Justificación: Optimiza el filtro final m.status = 1 y la clave de unión.
 
 ```sql
@@ -90,3 +84,11 @@ JOIN
 WHERE
     m.status = 1; -- Filtro final para manifiestos 'in_route'
 ```
+
+## Ejercicio 4
+Los Background Jobs tares en segundo plano que genralmente usamos para ejecutar tareas largas, lentas o periódicas fuera del flujo principal.
+Para  implementar un job en Sidekiq con scheduler que detecte manifiestos sin cambios por más
+de 2 horas. Basicamente 
+*crear un worker que realizar una consulta a la base de datos para encontrar manifiestos inactivos.
+*Configurar el scheduler con una regla CRON o un intervalo para que Sidekiq  encole y ejecute el job.
+*El worker procesa los resultados, la acción deseada.
